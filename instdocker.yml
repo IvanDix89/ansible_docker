@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: true
+  tasks:
+     - name: Update apt-cache 
+       apt: update_cache=yes
+
+     - name: Install ind
+       apt: name={{ item }} state=latest update_cache=yes force_apt_get=yes
+       loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+
+     - name: Add Docker GPG apt Key
+       apt_key:
+         url: https://download.docker.com/linux/ubuntu/gpg
+         state: present
+         #shell: 'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -'
+
+     - name: add rep
+       apt_repository:
+         repo: deb https://download.docker.com/linux/ubuntu bionic stable
+         state: present
+
+     - name: Install docker-ce
+       apt: name=docker-ce state=latest
+
+     - name: Install docker-ce-cli
+       apt: name=docker-ce-cli state=latest
+
